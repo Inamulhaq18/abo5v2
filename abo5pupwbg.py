@@ -43,6 +43,7 @@ for uploaded_file in uploaded_files:
     s3.Bucket('abo5').upload_file(Filename=name, Key=name)
     #BG Removal
     img2 = PILImage.open(name)
+    og=img2.copy()
     #st.image(img2)
     img2=remove(img2)
     #Rotating the image to correct orientation
@@ -59,7 +60,11 @@ for uploaded_file in uploaded_files:
     offset = ((bg_w - img_w) // 2, (bg_h - img_h) // 2)
     img1.paste(img2, offset, mask = img2)
     img1=img1.resize((1200,1200),PILImage.ANTIALIAS)
-    st.image(img1,width=300)
+    with st.expander("BG removed", expanded=False):
+        st.image(img1,width=500,caption="Product Image")
+    with st.expander("Original", expanded=False ):
+        st.image(og,width=500,caption="Product Image")
+   
     img1.save("converted.png", format="png")
     #upload P to s3
     #name=save_uploadedfile(img1)
