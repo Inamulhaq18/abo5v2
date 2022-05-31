@@ -43,10 +43,10 @@ class product(Base):
 def update_product(Product_Name_en="NA",Product_Name_ar="NA",Product_Category="NA",
                  Product_subcategory="NA",Product_describtion_en="NA", Product_describtion_ar="NA",
                   Tags="NA",Retail_outlet="NA",Product_price=0.00, Product_image_R_url="NA",
-                  Product_Entry_Timestamp=datetime.datetime.now(),Product_review_status=0,Product_image_P_url="NA",):
+                  Product_Entry_Timestamp=datetime.datetime.now(),Product_review_status=0,Product_image_P_url="NA",user="NA"):
     #hours_added = datetime.timedelta(hours = 3)
     row1=product( Product_Name_en=Product_Name_en, Product_Name_ar=Product_Name_ar,
-                  Product_Entry_Timestamp=datetime.datetime.now() ,Product_Category=Product_Category, Product_subcategory=Product_subcategory, Product_describtion_en=Product_describtion_en, Product_describtion_ar=Product_describtion_ar, Tags=Tags, Retail_outlet=Retail_outlet, Product_price=Product_price, Product_image_R_url=Product_image_R_url, Product_image_P_url=Product_image_P_url)
+                  Product_Entry_Timestamp=datetime.datetime.now() ,Product_Category=Product_Category, Product_subcategory=Product_subcategory, Product_describtion_en=Product_describtion_en, Product_describtion_ar=Product_describtion_ar, Tags=Tags, Retail_outlet=Retail_outlet, Product_price=Product_price, Product_image_R_url=Product_image_R_url, Product_image_P_url=Product_image_P_url, user=user)
     with Session() as session:
         session.add(row1) 
         session.commit()
