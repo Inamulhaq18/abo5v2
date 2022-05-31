@@ -99,7 +99,7 @@ if productform.form_submit_button("upload"):
     st.success("Updated")
     st.balloons()
     time.sleep(2)
-    st.experimental_rerun()
+    #st.experimental_rerun()
 
     #   status=False
 
