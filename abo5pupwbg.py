@@ -43,7 +43,7 @@ for uploaded_file in uploaded_files:
     s3.Bucket('abo5').upload_file(Filename=name, Key=name)
     #BG Removal
     img2 = PILImage.open(name)
-    st.image(img2)
+    #st.image(img2)
     img2=remove(img2)
     #Rotating the image to correct orientation
     img2=img2.rotate(270,expand=True)
@@ -80,10 +80,10 @@ Pro_category = category.selectbox(
 #    'Select Product Sub-Category',
 #    ('Utensils', 'Food', 'kitchenware'))
 
-Pro_price = price.text_input('Product-Price', '')
+Pro_price = price.number_input('Price', 0.0)
 
 Pro_Retail= Retail_outlet.selectbox('Select Retail Outlet',
-                                    ('Store1', 'Store2', 'Store3','Store4'))
+                                    ('Taw9eel', 'Store2', 'Store3','Store4'))
 
 
 #Product Name textbox    
@@ -95,8 +95,11 @@ Pro_Tags = Tags.text_input('Tags', '')
 if productform.form_submit_button("upload"):
     update_product(Product_Entry_Timestamp=datetime.datetime.now(), Product_Name_en=Pro_nameen, 
                     Product_Name_ar=Pro_namear, Product_Category=Pro_category,Tags=Pro_Tags,Retail_outlet=Pro_Retail,
-                    Product_price=0.00, Product_image_R_url=links, Product_image_P_url=linksp)
+                    Product_price=Pro_price, Product_image_R_url=links, Product_image_P_url=linksp)
     st.success("Updated")
     st.balloons()
+    time.sleep(2)
+    st.experimental_rerun()
+
     #   status=False
 
