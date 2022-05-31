@@ -1,53 +1,105 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float 
-import sqlalchemy as db
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base 
+import streamlit as st
+import logging
+import os
+from PIL import Image as PILImage
+from pupdatabase import update_product
+from abo5s3 import *
+import time
 import datetime
-from sqlalchemy import delete
-
-#Connecting to the database
-engine = create_engine("postgresql://hkmuctkbhmlhsr:59563300aab6c650f8bbc9cc4153df6a42054b71e9be00dda420f40bbbf791b2@ec2-54-76-43-89.eu-west-1.compute.amazonaws.com:5432/dd8a5bspvhrk8c", echo = False)
-
-#establishing a session 
-Session=sessionmaker(bind=engine)
-session=Session
-Base=declarative_base()
-
-class product(Base):
-    __tablename__ = 'master_product_table'
-
-    Product_id = Column(Integer, primary_key=True,autoincrement=True)
-    start_time = Column(String(50),default="NA")
-    user = Column(String(50),default="NA")
-    Product_Name_en=Column(String(50),default="NA")
-    Product_Name_ar=Column(String(50),default="NA")
-    Product_Entry_Timestamp=Column(String(50),default="NA")
-    Product_Category=Column(String(50),default="NA")
-    Product_subcategory=Column(String(50),default="NA")
-    Product_describtion_en=Column(String(500),default="NA")
-    Product_describtion_ar=Column(String(500),default="NA")
-    Tags=Column(String(500),default="NA")
-    Retail_outlet=Column(String(50),default="NA")
-    Product_image_R_url=Column(String(500),default="NA")
-    Product_image_P_url=Column(String(500),default="NA")
-    Product_review_status=Column(Integer,default=0)
-    Product_review_TimeStamp=Column(String(50),default="NA")
-    Product_approval_status=Column(Integer,default=0)
-    Product_approval_TimeStamp=Column(String(50),default="NA")
-    Product_live_status=Column(Integer,default=0)
-    Product_live_TimeStamp=Column(String(50),default="NA")
-    Product_price=Column(Float(50),default=0.00)
+from rembg import remove
 
 
+url="https://abo5.s3.eu-central-1.amazonaws.com/"
 
-def update_product(Product_Name_en="NA",Product_Name_ar="NA",Product_Category="NA",
-                 Product_subcategory="NA",Product_describtion_en="NA", Product_describtion_ar="NA",
-                  Tags="NA",Retail_outlet="NA",Product_price=0.00, Product_image_R_url="NA",
-                  Product_Entry_Timestamp=datetime.datetime.now(),Product_review_status=0,Product_image_P_url="NA",user="NA"):
-    #hours_added = datetime.timedelta(hours = 3)
-    row1=product( Product_Name_en=Product_Name_en, Product_Name_ar=Product_Name_ar,
-                  Product_Entry_Timestamp=datetime.datetime.now() ,Product_Category=Product_Category, Product_subcategory=Product_subcategory, Product_describtion_en=Product_describtion_en, Product_describtion_ar=Product_describtion_ar, Tags=Tags, Retail_outlet=Retail_outlet, Product_price=Product_price, Product_image_R_url=Product_image_R_url, Product_image_P_url=Product_image_P_url, user=user)
-    with Session() as session:
-        session.add(row1) 
-        session.commit()
+
+#Header
+st.title('Abo5 Product Collection Portal')
+
+#initiating a form
+productform=st.form("product", clear_on_submit=True)
+
+#container
+
+Productnameen = productform.container()
+productnamear = productform.container()
+Tags = productform.container()
+category = productform.container()
+subcategory = productform.container()
+Retail_outlet = productform.container()
+price = productform.container()
+Upload = productform.container()
+
+#Image Upload
+
+urllist=[]
+urllistp=[]
+uploaded_files = Upload.file_uploader("Take Pictures or browse", type=["png","jpg","jpeg"], accept_multiple_files=True)
+for uploaded_file in uploaded_files:
+    img1 = PILImage.open(r"bgimage.png")
+    bytes_data = uploaded_file.read()
+    name=save_uploadedfile(uploaded_file)
+    st.write(name)
+    #upload R to s3
+    s3.Bucket('abo5').upload_file(Filename=name, Key=name)
+    #BG Removal
+    img2 = PILImage.open(name)
+    #st.image(img2)
+    img2=remove(img2)
+    #Rotating the image to correct orientation
+    img2=img2.rotate(270,expand=True)
+
+    #Cropping the image to correct size
+    img2 = img2.crop(img2.getbbox())
+
+    #scaling the BG image to the size of the product image
+    maxsize=int(max(img2.size)*1.5)
+    img1=(img1.resize((maxsize,maxsize),PILImage.ANTIALIAS))
+    img_w, img_h = img2.size
+    bg_w, bg_h = img1.size
+    offset = ((bg_w - img_w) // 2, (bg_h - img_h) // 2)
+    img1.paste(img2, offset, mask = img2)
+    img1=img1.resize((1200,1200),PILImage.ANTIALIAS)
+    st.image(img1,width=300)
+    img1.save("converted.png", format="png")
+    #upload P to s3
+    #name=save_uploadedfile(img1)
+    namep="processed"+name
+    s3.Bucket('abo5').upload_file(Filename="converted.png", Key=name)
+    urllist.append(url+name)
+    urllistp.append(url+namep)
+links = ", ".join(urllist)
+linksp=", ".join(urllistp)
+st.write(links)
+
+#Select Category
+Pro_category = category.selectbox(
+    'Select Product Category',
+    ('Not Selected','Occasions & Holidays', 'Household Gears', 'Antiques & Gifts','Cleaning & Plastics','Personal Care','Stationery & School Supplies','Accessories','MISCELLANEOUS','CLOTHES','FOOD'))
+
+#Pro_subcategory = subcategory.selectbox(
+#    'Select Product Sub-Category',
+#    ('Utensils', 'Food', 'kitchenware'))
+
+Pro_price = price.number_input('Price', 0.0)
+
+Pro_Retail= Retail_outlet.selectbox('Select Retail Outlet',
+                                    ('Taw9eel', 'Store2', 'Store3','Store4'))
+
+
+#Product Name textbox    
+Pro_nameen = Productnameen. text_input('Product Name English', '')
+Pro_namear = productnamear.text_input('Product Name Arabic', '')
+Pro_Tags = Tags.text_input('Tags', '')
+
+#submit button
+if productform.form_submit_button("upload"):
+    update_product(Product_Entry_Timestamp=datetime.datetime.now(), Product_Name_en=Pro_nameen, 
+                    Product_Name_ar=Pro_namear, Product_Category=Pro_category,Tags=Pro_Tags,Retail_outlet=Pro_Retail,
+                    Product_price=Pro_price, Product_image_R_url=links, Product_image_P_url=linksp,user="Inamul" )
+    st.success("Updated")
+    st.balloons()
+    time.sleep(2)
+    st.experimental_rerun()
+
+    #   status=False
 
