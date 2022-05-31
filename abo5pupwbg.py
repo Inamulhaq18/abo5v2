@@ -38,7 +38,7 @@ for uploaded_file in uploaded_files:
     img1 = PILImage.open(r"bgimage.png")
     bytes_data = uploaded_file.read()
     name=save_uploadedfile(uploaded_file)
-    st.write(name)
+    #st.write(name)
     #upload R to s3
     s3.Bucket('abo5').upload_file(Filename=name, Key=name)
     #BG Removal
@@ -69,7 +69,7 @@ for uploaded_file in uploaded_files:
     urllistp.append(url+namep)
 links = ", ".join(urllist)
 linksp=", ".join(urllistp)
-st.write(links)
+#st.write(links)
 
 #Select Category
 Pro_category = category.selectbox(
@@ -99,7 +99,6 @@ if productform.form_submit_button("upload"):
     st.success("Updated")
     st.balloons()
     time.sleep(2)
-    st.experimental_rerun()
 
     #   status=False
 
