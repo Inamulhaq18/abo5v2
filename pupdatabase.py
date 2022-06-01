@@ -50,4 +50,5 @@ def update_product(Product_Name_en="NA",Product_Name_ar="NA",Product_Category="N
     with Session() as session:
         session.add(row1) 
         session.commit()
+    return("True")
 
