@@ -8,7 +8,7 @@ import time
 import datetime
 from rembg import remove
 
-
+new=0
 url="https://abo5.s3.eu-central-1.amazonaws.com/"
 
 
@@ -57,7 +57,7 @@ Pro_namear = productnamear.text_input('Product Name Arabic', '')
 Pro_Tags = Tags.text_input('Tags', '')
 
 #submit button
-if productform.form_submit_button("upload"):
+if productform.form_submit_button("upload") and new==0:
     with st.spinner('Wait for it...'):
        for uploaded_file in uploaded_files:
             img1 = PILImage.open(r"bgimage.png")
@@ -105,6 +105,7 @@ if productform.form_submit_button("upload"):
        if status == "True":
         st.success("Updated")
         time.sleep(2)
+        new=1
         st.balloons()
 
     #   status=False
