@@ -69,7 +69,7 @@ if productform.form_submit_button("upload"):
             img2 = PILImage.open(name)
             og=img2.copy()
             #st.image(img2)
-            imgtest=remove(img2,,alpha_matting=True)
+            imgtest=remove(img2,alpha_matting=True)
             img2=remove(img2)
             #Rotating the image to correct orientation
             img2=img2.rotate(270,expand=True)
