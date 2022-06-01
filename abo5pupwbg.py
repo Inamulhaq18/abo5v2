@@ -85,11 +85,6 @@ if productform.form_submit_button("upload"):
         offset = ((bg_w - img_w) // 2, (bg_h - img_h) // 2)
         img1.paste(img2, offset, mask = img2)
         img1=img1.resize((1200,1200),PILImage.ANTIALIAS)
-        with st.expander("BG removed", expanded=False):
-            st.image(img1,width=500,caption="Product Image")
-        with st.expander("Original", expanded=False ):
-            st.image(og,width=500,caption="Product Image")
-
         img1.save("converted.png", format="png")
         #upload P to s3
         #name=save_uploadedfile(img1)
@@ -97,6 +92,10 @@ if productform.form_submit_button("upload"):
         s3.Bucket('abo5').upload_file(Filename="converted.png", Key=namep)
         urllist.append(url+name)
         urllistp.append(url+namep)
+        with st.expander("BG removed", expanded=False):
+            st.image(img1,width=500,caption="Product Image")
+        with st.expander("Original", expanded=False ):
+            st.image(og,width=500,caption="Product Image")
    links = ", ".join(urllist)
    linksp=", ".join(urllistp)
 #st.write(links)
