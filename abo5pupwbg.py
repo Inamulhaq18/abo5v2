@@ -104,7 +104,7 @@ if productform.form_submit_button("upload"):
 #                       Product_price=Pro_price, Product_image_R_url=links, Product_image_P_url=linksp,user="Inamul" )
 #        st.success("Updated")
        st.image(imgtest,caption="Alphamating")
-       st.image(img2,catption=("normal"))
+       st.image(img2,caption=("normal"))
        time.sleep(2)
        st.balloons()
 
