@@ -101,10 +101,9 @@ if productform.form_submit_button("upload"):
        status=update_product(Product_Entry_Timestamp=datetime.datetime.now(), Product_Name_en=Pro_nameen,
                       Product_Name_ar=Pro_namear, Product_Category=Pro_category,Tags=Pro_Tags,Retail_outlet=Pro_Retail,
                       Product_price=Pro_price, Product_image_R_url=links, Product_image_P_url=linksp,user="Inamul" )
-       if status == "True":
-        st.success("Updated")
-        time.sleep(2)
-        st.balloons()
+       st.success("Updated")
+       time.sleep(2)
+       st.balloons()
 
     #   status=False
 
