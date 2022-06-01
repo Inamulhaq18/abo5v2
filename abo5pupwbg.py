@@ -84,7 +84,7 @@ if productform.form_submit_button("upload"):
             bg_w, bg_h = img1.size
             offset = ((bg_w - img_w) // 2, (bg_h - img_h) // 2)
             img1.paste(img2, offset, mask = img2)
-            img1=img1.resize((1200,1200),PILImage.ANTIALIAS)
+            img1=img1.resize((2000,2000),PILImage.ANTIALIAS)
             img1.save("converted.png", format="png")
             #upload P to s3
             #name=save_uploadedfile(img1)
