@@ -59,7 +59,7 @@ Pro_Tags = Tags.text_input('Tags', '')
 #submit button
 if productform.form_submit_button("upload"):
 
-    for uploaded_file in uploaded_files:
+   for uploaded_file in uploaded_files:
         img1 = PILImage.open(r"bgimage.png")
         bytes_data = uploaded_file.read()
         name=save_uploadedfile(uploaded_file)
@@ -97,15 +97,15 @@ if productform.form_submit_button("upload"):
         s3.Bucket('abo5').upload_file(Filename="converted.png", Key=namep)
         urllist.append(url+name)
         urllistp.append(url+namep)
-    links = ", ".join(urllist)
-    linksp=", ".join(urllistp)
+   links = ", ".join(urllist)
+   linksp=", ".join(urllistp)
 #st.write(links)
    update_product(Product_Entry_Timestamp=datetime.datetime.now(), Product_Name_en=Pro_nameen,
                   Product_Name_ar=Pro_namear, Product_Category=Pro_category,Tags=Pro_Tags,Retail_outlet=Pro_Retail,
                   Product_price=Pro_price, Product_image_R_url=links, Product_image_P_url=linksp,user="Inamul" )
-    st.success("Updated")
-    st.balloons()
-    time.sleep(2)
+   st.success("Updated")
+   st.balloons()
+   time.sleep(2)
 
     #   status=False
 
