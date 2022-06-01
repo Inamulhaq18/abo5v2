@@ -40,7 +40,7 @@ for uploaded_file in uploaded_files:
     name=save_uploadedfile(uploaded_file)
     #st.write(name)
     #upload R to s3
-    s3.Bucket('abo5').upload_file(Filename=uploaded_file, Key=name)
+    s3.Bucket('abo5').upload_file(Filename=name, Key=name)
     #BG Removal
     img2 = PILImage.open(name)
     og=img2.copy()
