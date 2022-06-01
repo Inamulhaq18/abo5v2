@@ -58,53 +58,53 @@ Pro_Tags = Tags.text_input('Tags', '')
 
 #submit button
 if productform.form_submit_button("upload"):
+    with st.spinner('Wait for it...'):
+       for uploaded_file in uploaded_files:
+            img1 = PILImage.open(r"bgimage.png")
+            bytes_data = uploaded_file.read()
+            name=save_uploadedfile(uploaded_file)
+            #st.write(name)
+            #upload R to s3
+            s3.Bucket('abo5').upload_file(Filename=name, Key=name)
+            #BG Removal
+            img2 = PILImage.open(name)
+            og=img2.copy()
+            #st.image(img2)
+            img2=remove(img2)
+            #Rotating the image to correct orientation
+            img2=img2.rotate(270,expand=True)
 
-   for uploaded_file in uploaded_files:
-        img1 = PILImage.open(r"bgimage.png")
-        bytes_data = uploaded_file.read()
-        name=save_uploadedfile(uploaded_file)
-        #st.write(name)
-        #upload R to s3
-        s3.Bucket('abo5').upload_file(Filename=name, Key=name)
-        #BG Removal
-        img2 = PILImage.open(name)
-        og=img2.copy()
-        #st.image(img2)
-        img2=remove(img2)
-        #Rotating the image to correct orientation
-        img2=img2.rotate(270,expand=True)
+            #Cropping the image to correct size
+            img2 = img2.crop(img2.getbbox())
 
-        #Cropping the image to correct size
-        img2 = img2.crop(img2.getbbox())
-
-        #scaling the BG image to the size of the product image
-        maxsize=int(max(img2.size)*1.5)
-        img1=(img1.resize((maxsize,maxsize),PILImage.ANTIALIAS))
-        img_w, img_h = img2.size
-        bg_w, bg_h = img1.size
-        offset = ((bg_w - img_w) // 2, (bg_h - img_h) // 2)
-        img1.paste(img2, offset, mask = img2)
-        img1=img1.resize((1200,1200),PILImage.ANTIALIAS)
-        img1.save("converted.png", format="png")
-        #upload P to s3
-        #name=save_uploadedfile(img1)
-        namep="processed"+name
-        s3.Bucket('abo5').upload_file(Filename="converted.png", Key=namep)
-        urllist.append(url+name)
-        urllistp.append(url+namep)
-        with st.expander("BG removed", expanded=False):
-            st.image(img1,width=500,caption="Product Image")
-        with st.expander("Original", expanded=False ):
-            st.image(og,width=500,caption="Product Image")
-   links = ", ".join(urllist)
-   linksp=", ".join(urllistp)
-#st.write(links)
-   update_product(Product_Entry_Timestamp=datetime.datetime.now(), Product_Name_en=Pro_nameen,
-                  Product_Name_ar=Pro_namear, Product_Category=Pro_category,Tags=Pro_Tags,Retail_outlet=Pro_Retail,
-                  Product_price=Pro_price, Product_image_R_url=links, Product_image_P_url=linksp,user="Inamul" )
-   st.success("Updated")
-   st.balloons()
-   time.sleep(2)
+            #scaling the BG image to the size of the product image
+            maxsize=int(max(img2.size)*1.5)
+            img1=(img1.resize((maxsize,maxsize),PILImage.ANTIALIAS))
+            img_w, img_h = img2.size
+            bg_w, bg_h = img1.size
+            offset = ((bg_w - img_w) // 2, (bg_h - img_h) // 2)
+            img1.paste(img2, offset, mask = img2)
+            img1=img1.resize((1200,1200),PILImage.ANTIALIAS)
+            img1.save("converted.png", format="png")
+            #upload P to s3
+            #name=save_uploadedfile(img1)
+            namep="processed"+name
+            s3.Bucket('abo5').upload_file(Filename="converted.png", Key=namep)
+            urllist.append(url+name)
+            urllistp.append(url+namep)
+            with st.expander("BG removed", expanded=False):
+                st.image(img1,width=500,caption="Product Image")
+            with st.expander("Original", expanded=False ):
+                st.image(og,width=500,caption="Product Image")
+       links = ", ".join(urllist)
+       linksp=", ".join(urllistp)
+    #st.write(links)
+       update_product(Product_Entry_Timestamp=datetime.datetime.now(), Product_Name_en=Pro_nameen,
+                      Product_Name_ar=Pro_namear, Product_Category=Pro_category,Tags=Pro_Tags,Retail_outlet=Pro_Retail,
+                      Product_price=Pro_price, Product_image_R_url=links, Product_image_P_url=linksp,user="Inamul" )
+       st.success("Updated")
+       time.sleep(2)
+    st.balloons()
 
     #   status=False
 
